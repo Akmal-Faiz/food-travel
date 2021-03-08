@@ -48,3 +48,7 @@ resources:
           Ref: PandasLambdaLayer
         Export:
           Name: PandasLambdaLayer
+package:
+  exclude:
+    - Q3.png
+    - Q4.ipynb
