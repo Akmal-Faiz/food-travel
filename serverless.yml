@@ -1,0 +1,50 @@
+service: food
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  profile: food
+  region: ap-southeast-1
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - s3:*
+          Resource: '*'
+
+functions:
+  restaurants:
+    handler: restaurants/restaurants.handler
+    layers:
+      - {Ref: PandasLambdaLayer}
+    environment:
+      RESTAURANTS_URL: https://raw.githubusercontent.com/ashraf356/cc4braininterview/main/restaurant_data.json
+      BUCKET_NAME: food-bucket-123611
+  restaurant_events:
+    handler: events/events.handler
+    layers:
+      - {Ref: PandasLambdaLayer}
+    environment:
+      RESTAURANTS_URL: https://raw.githubusercontent.com/ashraf356/cc4braininterview/main/restaurant_data.json
+      BUCKET_NAME: food-bucket-123611
+      
+layers:
+  pandas:
+    path: layers
+
+resources:
+  Resources:
+    FoodBucket:
+      Type: AWS::S3::Bucket
+      Properties: 
+        BucketName: food-bucket-123611
+  Outputs:
+    FfmpegLayerExport:
+        Value:
+          Ref: PandasLambdaLayer
+        Export:
+          Name: PandasLambdaLayer
